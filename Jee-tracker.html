@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE Prep Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 28, 45, 0.7);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-phy: #3b82f6; /* Physics - Blue */
+            --accent-chem: #10b981; /* Chemistry - Green */
+            --accent-math: #a855f7; /* Maths - Purple */
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Header & Summary --- */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+        }
+
+        .overall-progress {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: var(--card-bg);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: scaleUp 0.5s ease-out backwards;
+        }
+
+        /* --- Grid Layout --- */
+        .subjects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: scaleUp 0.6s ease-out backwards;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Physics Card Animation Delay */
+        .subject-card:nth-child(1) { animation-delay: 0.2s; }
+        .subject-card:nth-child(2) { animation-delay: 0.4s; }
+        .subject-card:nth-child(3) { animation-delay: 0.6s; }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .subject-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Subject Colors */
+        .physics .subject-title { color: var(--accent-phy); }
+        .chemistry .subject-title { color: var(--accent-chem); }
+        .maths .subject-title { color: var(--accent-math); }
+
+        /* --- Topic List --- */
+        .topic-list {
+            list-style: none;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            transition: background 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .topic-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
+        }
+
+        .topic-name {
+            font-size: 0.95rem;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        /* Checkboxes Customization */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid #475569;
+            transition: all 0.2s ease;
+        }
+
+        .topic-item.completed .checkbox-wrapper {
+            background-color: currentColor;
+            border-color: currentColor;
+        }
+
+        .topic-item.completed .topic-name {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-wrapper i {
+            font-size: 0.8rem;
+            color: #fff;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+
+        .topic-item.completed .checkbox-wrapper i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Subject Specific Checkboxes UI */
+        .physics .topic-item.completed .checkbox-wrapper { color: var(--accent-phy); }
+        .chemistry .topic-item.completed .checkbox-wrapper { color: var(--accent-chem); }
+        .maths .topic-item.completed .checkbox-wrapper { color: var(--accent-math); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            header h1 { font-size: 2rem; }
+            .overall-progress { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JEE Ascent Track</h1>
+        <p>Master the syllabus. Track your progress. Crush the exam.</p>
+        
+        <div class="overall-progress">
+            <div class="stat-badge" style="animation-delay: 0.2s">
+                <i class="fa-solid fa-chart-line" style="color: #38bdf8;"></i>
+                <span>Overall: <strong id="global-percentage">0%</strong></span>
+            </div>
+            <div class="stat-badge" style="animation-delay: 0.4s">
+                <i class="fa-solid fa-check-double" style="color: #10b981;"></i>
+                <span>Completed: <strong id="global-count">0/15</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="subjects-container">
+
+        <div class="subject-card physics">
+            <div class="subject-header">
+                <div class="subject-title">
+                    <i class="fa-solid fa-atom"></i>
+                    Physics
+                </div>
+                <span class="subject-progress" id="phy-progress">0%</span>
+            </div>
+            <ul class="topic-list" id="phy-list">
+                </ul>
+        </div>
+
+        <div class="subject-card chemistry">
+            <div class="subject-header">
+                <div class="subject-title">
+                    <i class="fa-solid fa-flask-vial"></i>
+                    Chemistry
+                </div>
+                <span class="subject-progress" id="chem-progress">0%</span>
+            </div>
+            <ul class="topic-list" id="chem-list">
+                </ul>
+        </div>
+
+        <div class="subject-card maths">
+            <div class="subject-header">
+                <div class="subject-title">
+                    <i class="fa-solid fa-square-root-variable"></i>
+                    Mathematics
+                </div>
+                <span class="subject-progress" id="math-progress">0%</span>
+            </div>
+            <ul class="topic-list" id="math-list">
+                </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // High-Yield JEE Syllabus Sample
+        const syllabusData = {
+            phy: [
+                "Mechanics & Kinematics",
+                "Electrodynamics",
+                "Optics & Wave Motion",
+                "Thermodynamics & Kinetic Theory",
+                "Modern Physics"
+            ],
+            chem: [
+                "Chemical Bonding & Periodic Table",
+                "Thermodynamics & Equilibrium",
+                "Organic Reaction Mechanisms",
+                "Coordination Chemistry",
+                "Gaseous & Solid States"
+            ],
+            math: [
+                "Calculus (Limits, Derivatives, Integrals)",
+                "Coordinate Geometry",
+                "Vectors & 3D Geometry",
+                "Algebra (Matrices & Determinants)",
+                "Probability & Statistics"
+            ]
+        };
+
+        // Persistent State
+        let completionState = JSON.parse(localStorage.getItem('jeeTrackerState')) || {
+            phy: Array(syllabusData.phy.length).fill(false),
+            chem: Array(syllabusData.chem.length).fill(false),
+            math: Array(syllabusData.math.length).fill(false)
+        };
+
+        function saveData() {
+            localStorage.setItem('jeeTrackerState', JSON.stringify(completionState));
+            calculateProgress();
+        }
+
+        // Generate UI Lists
+        function renderSubject(subjectKey, listId) {
+            const listEl = document.getElementById(listId);
+            listEl.innerHTML = '';
+
+            syllabusData[subjectKey].forEach((topic, index) => {
+                const isChecked = completionState[subjectKey][index];
+                
+                const li = document.createElement('li');
+                li.className = `topic-item ${isChecked ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <span class="topic-name">${topic}</span>
+                    <div class="checkbox-wrapper">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                `;
+
+                li.addEventListener('click', () => {
+                    completionState[subjectKey][index] = !completionState[subjectKey][index];
+                    li.classList.toggle('completed');
+                    saveData();
+                });
+
+                listEl.appendChild(li);
+            });
+        }
+
+        // Calculate and Render Progress percentages
+        function calculateProgress() {
+            let totalChapters = 0;
+            let totalChecked = 0;
+
+            ['phy', 'chem', 'math'].forEach(sub => {
+                const checked = completionState[sub].filter(Boolean).length;
+                const total = completionState[sub].length;
+                totalChapters += total;
+                totalChecked += checked;
+
+                const percentage = total > 0 ? Math.round((checked / total) * 100) : 0;
+                document.getElementById(`${sub}-progress`).innerText = `${percentage}%`;
+            });
+
+            const globalPercentage = totalChapters > 0 ? Math.round((totalChecked / totalChapters) * 100) : 0;
+            document.getElementById('global-percentage').innerText = `${globalPercentage}%`;
+            document.getElementById('global-count').innerText = `${totalChecked}/${totalChapters}`;
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSubject('phy', 'phy-list');
+            renderSubject('chem', 'chem-list');
+            renderSubject('math', 'math-list');
+            calculateProgress();
+        });
+    </script>
+</body>
+</html>
